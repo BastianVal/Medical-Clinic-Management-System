@@ -1,9 +1,9 @@
 package com.appointments.appointments.pacient;
 
-import com.appointments.appointments.pacient.pacientDtos.PacientDto;
-import org.springframework.http.HttpStatus;
+import com.appointments.appointments.pacient.dto.PacientRequest;
+import com.appointments.appointments.pacient.dto.PacientResponse;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.ResponseStatus;
+
 import java.util.List;
 
 @Service
@@ -16,32 +16,51 @@ public class PacientService {
         this.pacientMapper = pacientMapper;
     }
 
-    @ResponseStatus(HttpStatus.CREATED)
-    public PacientDto createPacient(PacientDto dto){
+    // =========================================================================
+    // METHODS FOR THE CONTROLLERS (Retrieves DTOs)
+    // =========================================================================
+
+    public PacientResponse createPacient(PacientRequest dto){
         Pacient pacient = pacientMapper.toPacient(dto);
 
-        pacientRepository.save(pacient);
+        pacient = pacientRepository.save(pacient);
 
-        return dto;
+        return pacientMapper.toPacientDto(pacient);
     }
 
-    @ResponseStatus(HttpStatus.OK)
-    public PacientDto findById(Integer id){
+    public PacientResponse findById(Integer id){
         Pacient pacient = pacientRepository.findById(id).orElse(new Pacient());
 
         return pacientMapper.toPacientDto(pacient);
     }
 
-    @ResponseStatus(HttpStatus.OK)
-    public List<PacientDto> findAll(){
+    public List<PacientResponse> findAll(){
         return  pacientRepository.findAll()
                 .stream()
                 .map(pacientMapper::toPacientDto)
                 .toList();
     }
 
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public PacientResponse updatePacient(Integer id, PacientRequest dto){
+        Pacient pacient = pacientRepository.findById(id).orElse(new Pacient());
+        pacient.setName(dto.name());
+        pacient.setEmail(dto.email());
+
+        pacient = pacientRepository.save(pacient);
+
+        return pacientMapper.toPacientDto(pacient);
+    }
+
     public void deleteById(Integer id){
         pacientRepository.deleteById(id);
+    }
+
+
+    // =========================================================================
+    // METHODS FOR THE SERVICES (Retrieves Entities)
+    // =========================================================================
+
+    public Pacient findByIdEntity(Integer id){
+        return pacientRepository.findById(id).orElse(new Pacient());
     }
 }

@@ -27,15 +27,15 @@ public class AppointmentsApplication {
 
 	@Bean
 	@Transactional
-	CommandLineRunner initDatabase(AppointmentStatusRepository appointmentRepository,
+	CommandLineRunner initDatabase(AppointmentStatusRepository appointmentStatusRepository,
 								   DoctorSpecialtyRepository doctorSpecialtyRepository,
 								   RoomStatusRepository roomStatusRepository
 	) {
 		return args -> {
-			if (appointmentRepository.count() == 0) { // Solo si la tabla está vacía
-				appointmentRepository.save(new AppointmentStatus(1, AppointmentStatusEnum.ACTIVE, new ArrayList<>()));
-				appointmentRepository.save(new AppointmentStatus(2, AppointmentStatusEnum.CANCELED, new ArrayList<>()));
-				appointmentRepository.save(new AppointmentStatus(3, AppointmentStatusEnum.EXPIRED, new ArrayList<>()));
+			if (appointmentStatusRepository.count() == 0) { // Solo si la tabla está vacía
+				appointmentStatusRepository.save(new AppointmentStatus(1, AppointmentStatusEnum.ACTIVE, new ArrayList<>()));
+				appointmentStatusRepository.save(new AppointmentStatus(2, AppointmentStatusEnum.CANCELED, new ArrayList<>()));
+				appointmentStatusRepository.save(new AppointmentStatus(3, AppointmentStatusEnum.EXPIRED, new ArrayList<>()));
 			}
 			if (doctorSpecialtyRepository.count() == 0) { // Solo si la tabla está vacía
 				doctorSpecialtyRepository.save(new DoctorSpecialty(1, DoctorSpecialtyEnum.DOCTOR, new ArrayList<>()));

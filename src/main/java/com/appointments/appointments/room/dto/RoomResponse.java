@@ -1,8 +1,9 @@
-package com.appointments.appointments.room.roomDtos;
+package com.appointments.appointments.room.dto;
 
 import com.appointments.appointments.roomStatus.RoomStatusEnum;
 
-public record RoomDtoResponse(
+public record RoomResponse(
+        Integer id,
         Integer number,
         RoomStatusEnum status
 ) {

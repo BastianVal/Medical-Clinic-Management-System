@@ -1,7 +1,7 @@
 package com.appointments.appointments.appoinment;
 
-import com.appointments.appointments.appoinment.appointmentDtos.AppointmentDTO;
-import com.appointments.appointments.appoinment.appointmentDtos.AppointmentDtoResponse;
+import com.appointments.appointments.appoinment.dto.AppointmentRequest;
+import com.appointments.appointments.appoinment.dto.AppointmentResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -17,20 +17,26 @@ public class AppointmentController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public AppointmentDtoResponse createAppointment(@RequestBody AppointmentDTO dto){
+    public AppointmentResponse createAppointment(@RequestBody AppointmentRequest dto){
         return appointmentService.createAppointment(dto);
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public AppointmentDtoResponse findById(@PathVariable Integer id){
+    public AppointmentResponse findById(@PathVariable Integer id){
         return appointmentService.findById(id);
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<AppointmentDtoResponse> findAll(){
+    public List<AppointmentResponse> findAll(){
         return appointmentService.findAll();
+    }
+
+    @PutMapping("{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public AppointmentResponse updateAppointment(@PathVariable Integer id ,@RequestBody AppointmentRequest appointmentRequest){
+        return appointmentService.updateAppointment(id, appointmentRequest);
     }
 
     @DeleteMapping("{id}")
@@ -39,5 +45,8 @@ public class AppointmentController {
         appointmentService.deleteById(id);
     }
 
-
+    @PatchMapping("/{id}/cancel")
+    public AppointmentResponse cancelAppointment(@PathVariable Integer id){
+        return appointmentService.cancelAppointment(id);
+    }
 }

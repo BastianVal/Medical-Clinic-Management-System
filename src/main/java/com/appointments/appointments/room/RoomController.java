@@ -1,7 +1,7 @@
 package com.appointments.appointments.room;
 
-import com.appointments.appointments.room.roomDtos.RoomDto;
-import com.appointments.appointments.room.roomDtos.RoomDtoResponse;
+import com.appointments.appointments.room.dto.RoomRequest;
+import com.appointments.appointments.room.dto.RoomResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -17,20 +17,25 @@ public class RoomController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public RoomDtoResponse createRoom(@RequestBody RoomDto roomDto){
-        return roomService.createRoom(roomDto);
+    public RoomResponse createRoom(@RequestBody RoomRequest roomRequest){
+        return roomService.createRoom(roomRequest);
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public RoomDtoResponse findById(@PathVariable Integer id){
+    public RoomResponse findById(@PathVariable Integer id){
         return roomService.findById(id);
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<RoomDtoResponse> findAll(){
+    public List<RoomResponse> findAll(){
         return roomService.findAll();
+    }
+
+    @PutMapping("/{id}")
+    public RoomResponse updateRoom(@PathVariable Integer id, @RequestBody RoomRequest roomRequest){
+        return roomService.updateRoom(id, roomRequest);
     }
 
     @DeleteMapping("{id}")

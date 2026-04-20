@@ -1,13 +1,14 @@
 package com.appointments.appointments.room;
 
-import com.appointments.appointments.room.roomDtos.RoomDto;
-import com.appointments.appointments.room.roomDtos.RoomDtoResponse;
+import com.appointments.appointments.room.dto.RoomRequest;
+import com.appointments.appointments.room.dto.RoomResponse;
 import com.appointments.appointments.roomStatus.RoomStatus;
 import com.appointments.appointments.roomStatus.RoomStatusEnum;
 import com.appointments.appointments.roomStatus.RoomStatusRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+
 import java.util.List;
 
 @Service
@@ -22,8 +23,11 @@ public class RoomService {
         this.roomMapper = roomMapper;
     }
 
-    @ResponseStatus(HttpStatus.CREATED)
-    public RoomDtoResponse createRoom(RoomDto dto){
+    // =========================================================================
+    // METHODS FOR THE CONTROLLERS (Retrieves DTOs)
+    // =========================================================================
+
+    public RoomResponse createRoom(RoomRequest dto){
         RoomStatus roomStatus = roomStatusRepository.findById(dto.roomStatusId()).orElse(new RoomStatus());
         roomStatus.setStatus(RoomStatusEnum.UNOCCUPIED);
 
@@ -34,23 +38,37 @@ public class RoomService {
         return roomMapper.toRoomDtoResponse(room);
     }
 
-    @ResponseStatus(HttpStatus.OK)
-    public RoomDtoResponse findById(Integer id){
+    public RoomResponse findById(Integer id){
         Room room = roomRepository.findById(id).orElse(new Room());
 
         return roomMapper.toRoomDtoResponse(room);
     }
 
-    @ResponseStatus(HttpStatus.OK)
-    public List<RoomDtoResponse> findAll(){
+    public List<RoomResponse> findAll(){
         return  roomRepository.findAll()
                 .stream()
                 .map(roomMapper::toRoomDtoResponse)
                 .toList();
     }
 
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public RoomResponse updateRoom(Integer id, RoomRequest dto){
+        Room room = roomRepository.findById(id).orElse(new Room());
+        room.setNumber(dto.number());
+
+        room = roomRepository.save(room);
+
+        return roomMapper.toRoomDtoResponse(room);
+    }
+
     public void deleteById(Integer id){
         roomRepository.deleteById(id);
+    }
+
+    // =========================================================================
+    // METHODS FOR THE SERVICES (Retrieves Entities)
+    // =========================================================================
+
+    public Room findByIdEntity(Integer id){
+        return roomRepository.findById(id).orElse(new Room());
     }
 }

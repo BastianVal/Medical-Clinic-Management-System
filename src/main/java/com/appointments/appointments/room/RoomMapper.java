@@ -1,17 +1,13 @@
 package com.appointments.appointments.room;
 
-import com.appointments.appointments.doctor.Doctor;
-import com.appointments.appointments.doctor.doctorDtos.DoctorDto;
-import com.appointments.appointments.doctor.doctorDtos.DoctorDtoResponse;
-import com.appointments.appointments.doctorSpecialty.DoctorSpecialty;
-import com.appointments.appointments.room.roomDtos.RoomDto;
-import com.appointments.appointments.room.roomDtos.RoomDtoResponse;
+import com.appointments.appointments.room.dto.RoomRequest;
+import com.appointments.appointments.room.dto.RoomResponse;
 import com.appointments.appointments.roomStatus.RoomStatus;
 import org.springframework.stereotype.Service;
 
 @Service
 public class RoomMapper {
-    public Room toRoom(RoomDto dto, RoomStatus roomStatus){
+    public Room toRoom(RoomRequest dto, RoomStatus roomStatus){
         Room room =  new Room();
 
         room.setNumber(dto.number());
@@ -20,8 +16,9 @@ public class RoomMapper {
         return room;
     }
 
-    public RoomDtoResponse toRoomDtoResponse(Room room){
-        return new RoomDtoResponse(
+    public RoomResponse toRoomDtoResponse(Room room){
+        return new RoomResponse(
+                room.getId(),
                 room.getNumber(),
                 room.getRoomStatus().getStatus()
         );

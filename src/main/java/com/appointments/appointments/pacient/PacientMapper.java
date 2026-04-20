@@ -1,15 +1,12 @@
 package com.appointments.appointments.pacient;
 
-import com.appointments.appointments.doctor.Doctor;
-import com.appointments.appointments.doctor.doctorDtos.DoctorDto;
-import com.appointments.appointments.doctor.doctorDtos.DoctorDtoResponse;
-import com.appointments.appointments.doctorSpecialty.DoctorSpecialty;
-import com.appointments.appointments.pacient.pacientDtos.PacientDto;
+import com.appointments.appointments.pacient.dto.PacientRequest;
+import com.appointments.appointments.pacient.dto.PacientResponse;
 import org.springframework.stereotype.Service;
 
 @Service
 public class PacientMapper {
-    public Pacient toPacient(PacientDto dto){
+    public Pacient toPacient(PacientRequest dto){
         Pacient pacient = new Pacient();
 
         pacient.setName(dto.name());
@@ -18,8 +15,9 @@ public class PacientMapper {
         return pacient;
     }
 
-    public PacientDto toPacientDto(Pacient pacient){
-        return new PacientDto(
+    public PacientResponse toPacientDto(Pacient pacient){
+        return new PacientResponse(
+                pacient.getId(),
                 pacient.getName(),
                 pacient.getEmail()
         );

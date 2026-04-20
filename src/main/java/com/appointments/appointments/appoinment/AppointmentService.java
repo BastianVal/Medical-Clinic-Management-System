@@ -1,18 +1,17 @@
 package com.appointments.appointments.appoinment;
 
-import com.appointments.appointments.appoinment.appointmentDtos.AppointmentDTO;
-import com.appointments.appointments.appoinment.appointmentDtos.AppointmentDtoResponse;
+import com.appointments.appointments.appoinment.dto.AppointmentRequest;
+import com.appointments.appointments.appoinment.dto.AppointmentResponse;
 import com.appointments.appointments.appointmentStatus.AppointmentStatus;
-import com.appointments.appointments.appointmentStatus.AppointmentStatusRepository;
+import com.appointments.appointments.appointmentStatus.AppointmentStatusEnum;
+import com.appointments.appointments.appointmentStatus.AppointmentStatusService;
 import com.appointments.appointments.doctor.Doctor;
-import com.appointments.appointments.doctor.DoctorRepository;
+import com.appointments.appointments.doctor.DoctorService;
 import com.appointments.appointments.pacient.Pacient;
-import com.appointments.appointments.pacient.PacientRepository;
+import com.appointments.appointments.pacient.PacientService;
 import com.appointments.appointments.room.Room;
-import com.appointments.appointments.room.RoomRepository;
-import org.springframework.http.HttpStatus;
+import com.appointments.appointments.room.RoomService;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.List;
 
@@ -20,27 +19,32 @@ import java.util.List;
 public class AppointmentService {
 
     private final AppointmentRepository appointmentRepository;
-    private final PacientRepository pacientRepository;
-    private final DoctorRepository doctorRepository;
-    private final RoomRepository roomRepository;
-    private final AppointmentStatusRepository appointmentStatusRepository;
+    private final PacientService pacientService;
+    private final DoctorService doctorService;
+    private final RoomService roomService;
+    private final AppointmentStatusService appointmentStatusService;
     private final AppointmentMapper appointmentMapper;
 
-    public AppointmentService(AppointmentRepository appointmentRepository, PacientRepository pacientRepository, DoctorRepository doctorRepository, RoomRepository roomRepository, AppointmentStatusRepository appointmentStatusRepository, AppointmentMapper appointmentMapper) {
+    public AppointmentService(AppointmentRepository appointmentRepository,
+                              PacientService pacientService,
+                              DoctorService doctorService,
+                              RoomService roomService,
+                              AppointmentStatusService appointmentStatusService,
+                              AppointmentMapper appointmentMapper) {
+
         this.appointmentRepository = appointmentRepository;
-        this.pacientRepository = pacientRepository;
-        this.doctorRepository = doctorRepository;
-        this.roomRepository = roomRepository;
-        this.appointmentStatusRepository = appointmentStatusRepository;
+        this.pacientService = pacientService;
+        this.doctorService = doctorService;
+        this.roomService = roomService;
+        this.appointmentStatusService = appointmentStatusService;
         this.appointmentMapper = appointmentMapper;
     }
 
-    @ResponseStatus(HttpStatus.CREATED)
-    public AppointmentDtoResponse createAppointment(AppointmentDTO dto){
-        Pacient pacient = pacientRepository.findById(dto.pacientId()).orElse(new Pacient());
-        Doctor doctor = doctorRepository.findById(dto.doctorId()).orElse(new Doctor());
-        Room room = roomRepository.findById(dto.roomId()).orElse(new Room());
-        AppointmentStatus status = appointmentStatusRepository.findById(1).orElse(new AppointmentStatus());
+    public AppointmentResponse createAppointment(AppointmentRequest dto){
+        Pacient pacient = pacientService.findByIdEntity(dto.pacientId());
+        Doctor doctor = doctorService.findByIdEntity(dto.doctorId());
+        Room room = roomService.findByIdEntity(dto.roomId());
+        AppointmentStatus status = appointmentStatusService.findById(1);
 
         Appointment appointment = appointmentMapper.toAppointment(dto, pacient, doctor, room, status);
 
@@ -49,23 +53,66 @@ public class AppointmentService {
         return appointmentMapper.toAppointmentDtoResponse(appointment);
     }
 
-    @ResponseStatus(HttpStatus.OK)
-    public AppointmentDtoResponse findById(Integer id){
+    public AppointmentResponse findById(Integer id){
          Appointment appointment = appointmentRepository.findById(id).orElse(new Appointment());
 
          return appointmentMapper.toAppointmentDtoResponse(appointment);
     }
 
-    @ResponseStatus(HttpStatus.OK)
-    public List<AppointmentDtoResponse> findAll(){
+    public List<AppointmentResponse> findAll(){
         return  appointmentRepository.findAll()
                 .stream()
                 .map(appointmentMapper::toAppointmentDtoResponse)
                 .toList();
     }
 
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public AppointmentResponse updateAppointment(Integer id, AppointmentRequest dto){
+        Pacient pacient = pacientService.findByIdEntity(dto.pacientId());
+        Doctor doctor = doctorService.findByIdEntity(dto.doctorId());
+        Room room = roomService.findByIdEntity(dto.roomId());
+        AppointmentStatus status = appointmentStatusService.findById(1);
+
+        Appointment appointment = appointmentRepository.findById(id).orElse(new Appointment());
+
+        appointment.setDateTime(dto.dateTime());
+        appointment.setPacient(pacient);
+        appointment.setDoctor(doctor);
+        appointment.setRoom(room);
+
+        appointment = appointmentRepository.save(appointment);
+
+        return appointmentMapper.toAppointmentDtoResponse(appointment);
+    }
+
     public void deleteById(Integer id){
         appointmentRepository.deleteById(id);
+    }
+
+    public List<AppointmentResponse> findByDoctorIdAndStatus(Integer id, AppointmentStatusEnum status){
+        List<Appointment> appointments = appointmentRepository.findByDoctorIdAndAppointmentStatus_Status(id, status);
+        return appointments
+                .stream()
+                .map(appointmentMapper::toAppointmentDtoResponse)
+                .toList();
+    }
+
+    public List<AppointmentResponse> findByPacientIdAndStatus(Integer id, AppointmentStatusEnum status){
+        List<Appointment> appointments = appointmentRepository.findByPacientIdAndAppointmentStatus_Status(id, status);
+        return appointments
+                .stream()
+                .map(appointmentMapper::toAppointmentDtoResponse)
+                .toList();
+    }
+
+    public AppointmentResponse cancelAppointment(Integer id){
+        Appointment appointment = appointmentRepository.findById(id).orElse(new Appointment());
+
+        AppointmentStatus appointmentStatus = appointmentStatusService.findById(2);// 2 : CANCELED
+
+        appointment.setAppointmentStatus(appointmentStatus);
+
+        appointment = appointmentRepository.save(appointment);
+
+        return appointmentMapper.toAppointmentDtoResponse(appointment);
     }
 }

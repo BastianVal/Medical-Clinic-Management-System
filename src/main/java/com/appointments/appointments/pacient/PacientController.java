@@ -1,6 +1,10 @@
 package com.appointments.appointments.pacient;
 
-import com.appointments.appointments.pacient.pacientDtos.PacientDto;
+import com.appointments.appointments.appoinment.AppointmentService;
+import com.appointments.appointments.appoinment.dto.AppointmentResponse;
+import com.appointments.appointments.appointmentStatus.AppointmentStatusEnum;
+import com.appointments.appointments.pacient.dto.PacientRequest;
+import com.appointments.appointments.pacient.dto.PacientResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -9,32 +13,45 @@ import java.util.List;
 @RequestMapping("/pacient")
 public class PacientController {
     private final PacientService pacientService;
+    private final AppointmentService appointmentService;
 
-    public PacientController(PacientService pacientService) {
+    public PacientController(PacientService pacientService, AppointmentService appointmentService) {
         this.pacientService = pacientService;
+        this.appointmentService = appointmentService;
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public PacientDto createPacient(@RequestBody PacientDto pacientDto){
-        return pacientService.createPacient(pacientDto);
+    public PacientResponse createPacient(@RequestBody PacientRequest pacientRequest){
+        return pacientService.createPacient(pacientRequest);
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public PacientDto findById(@PathVariable Integer id){
+    public PacientResponse findById(@PathVariable Integer id){
         return pacientService.findById(id);
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<PacientDto> findAll(){
+    public List<PacientResponse> findAll(){
         return pacientService.findAll();
+    }
+
+    @PutMapping("/{id}")
+    public PacientResponse updatePacient(@PathVariable Integer id, @RequestBody PacientRequest pacientRequest){
+        return pacientService.updatePacient(id, pacientRequest);
     }
 
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteById(@PathVariable Integer id){
         pacientService.deleteById(id);
+    }
+
+    @GetMapping("{id}/appointment")
+    public List<AppointmentResponse> findAppointmentByIdAndStatus(@PathVariable Integer id,
+                                                                  @RequestParam AppointmentStatusEnum status){
+        return appointmentService.findByPacientIdAndStatus(id, status);
     }
 }

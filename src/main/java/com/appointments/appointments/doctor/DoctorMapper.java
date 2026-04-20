@@ -1,24 +1,29 @@
 package com.appointments.appointments.doctor;
 
-import com.appointments.appointments.doctor.doctorDtos.DoctorDto;
-import com.appointments.appointments.doctor.doctorDtos.DoctorDtoResponse;
+import com.appointments.appointments.appUser.AppUser;
+import com.appointments.appointments.doctor.dto.DoctorRequest;
+import com.appointments.appointments.doctor.dto.DoctorResponse;
 import com.appointments.appointments.doctorSpecialty.DoctorSpecialty;
 import org.springframework.stereotype.Service;
 
 @Service
 public class DoctorMapper {
-    public Doctor toDoctor(DoctorDto dto, DoctorSpecialty doctorSpecialty){
+    public Doctor toDoctor(DoctorRequest dto, DoctorSpecialty doctorSpecialty, AppUser appUser){
         Doctor doctor =  new Doctor();
         doctor.setName(dto.name());
         doctor.setDoctorSpecialty(doctorSpecialty);
+        doctor.setAppUser(appUser);
 
         return doctor;
     }
 
-    public DoctorDtoResponse toDoctorDtoResponse(Doctor doctor){
-        return new DoctorDtoResponse(
+    public DoctorResponse toDoctorDtoResponse(Doctor doctor){
+        return new DoctorResponse(
+                doctor.getId(),
                 doctor.getName(),
-                doctor.getDoctorSpecialty().getSpecialty()
+                doctor.getAppUser().getEmail(),
+                doctor.getDoctorSpecialty().getSpecialty(),
+                doctor.getAppUser().getId()
         );
     }
 }

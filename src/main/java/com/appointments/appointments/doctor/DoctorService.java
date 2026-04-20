@@ -1,56 +1,69 @@
 package com.appointments.appointments.doctor;
 
-import com.appointments.appointments.doctor.doctorDtos.DoctorDto;
-import com.appointments.appointments.doctor.doctorDtos.DoctorDtoResponse;
-import com.appointments.appointments.doctorSpecialty.DoctorSpecialty;
-import com.appointments.appointments.doctorSpecialty.DoctorSpecialtyRepository;
-import org.springframework.http.HttpStatus;
+import com.appointments.appointments.doctor.dto.DoctorRequest;
+import com.appointments.appointments.doctor.dto.DoctorResponse;
+import com.appointments.appointments.doctorSpecialty.DoctorSpecialtyService;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import java.util.List;
 
 
 @Service
 public class DoctorService {
     private final DoctorRepository doctorRepository;
-    private final DoctorSpecialtyRepository doctorSpecialtyRepository;
     private final DoctorMapper doctorMapper;
+    private final DoctorSpecialtyService doctorSpecialtyService;
 
 
-    public DoctorService(DoctorRepository doctorRepository, DoctorSpecialtyRepository doctorSpecialtyRepository, DoctorMapper doctorMapper) {
+    public DoctorService(DoctorRepository doctorRepository, DoctorMapper doctorMapper, DoctorSpecialtyService doctorSpecialtyService) {
         this.doctorRepository = doctorRepository;
-        this.doctorSpecialtyRepository = doctorSpecialtyRepository;
         this.doctorMapper = doctorMapper;
+        this.doctorSpecialtyService = doctorSpecialtyService;
     }
 
-    @ResponseStatus(HttpStatus.CREATED)
-    public DoctorDtoResponse createDoctor(DoctorDto dto){
-        DoctorSpecialty doctorSpecialty = doctorSpecialtyRepository.findById(dto.specialtyId()).orElse(new DoctorSpecialty());
+    // =========================================================================
+    // METHODS FOR THE CONTROLLERS (Retrieves DTOs)
+    // =========================================================================
 
-        Doctor doctor = doctorMapper.toDoctor(dto, doctorSpecialty);
-
-        doctorRepository.save(doctor);
-
-        return doctorMapper.toDoctorDtoResponse(doctor);
-    }
-
-    @ResponseStatus(HttpStatus.OK)
-    public DoctorDtoResponse findById(Integer id){
+    public DoctorResponse findById(Integer id){
         Doctor doctor = doctorRepository.findById(id).orElse(new Doctor());
 
         return doctorMapper.toDoctorDtoResponse(doctor);
     }
 
-    @ResponseStatus(HttpStatus.OK)
-    public List<DoctorDtoResponse> findAll(){
+    public List<DoctorResponse> findAll(){
         return  doctorRepository.findAll()
                 .stream()
                 .map(doctorMapper::toDoctorDtoResponse)
                 .toList();
     }
 
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public DoctorResponse updateDoctor(Integer id, DoctorRequest dto){
+        Doctor doctor = doctorRepository.findById(id).orElse(new Doctor());
+        doctor.setName(dto.name());
+
+        doctor.setDoctorSpecialty(
+                doctorSpecialtyService.findByIdEntity(dto.specialtyId())
+        );
+
+        doctor = doctorRepository.save(doctor);
+
+        return doctorMapper.toDoctorDtoResponse(doctor);
+    }
+
     public void deleteById(Integer id){
         doctorRepository.deleteById(id);
+    }
+
+    // =========================================================================
+    // METHODS FOR THE SERVICES (Retrieves Entities)
+    // =========================================================================
+
+
+    public Doctor createDoctorEntity(Doctor doctor){
+        return doctorRepository.save(doctor);
+    }
+
+    public Doctor findByIdEntity(Integer id){
+        return doctorRepository.findById(id).orElse(new Doctor());
     }
 }

@@ -1,5 +1,6 @@
 package com.appointments.appointments.doctor;
 
+import com.appointments.appointments.appUser.AppUser;
 import com.appointments.appointments.appoinment.Appointment;
 import com.appointments.appointments.doctorSpecialty.DoctorSpecialty;
 import com.appointments.appointments.doctorSpecialty.DoctorSpecialtyEnum;
@@ -29,4 +30,8 @@ public class Doctor {
     @OneToMany(mappedBy = "doctor")
     @JsonIgnore
     private List<Appointment> appointments;
+
+    @OneToOne
+    @JoinColumn(name = "account_id")
+    private AppUser appUser;
 }
