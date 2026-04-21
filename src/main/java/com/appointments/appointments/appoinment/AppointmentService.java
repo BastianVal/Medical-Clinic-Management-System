@@ -11,10 +11,12 @@ import com.appointments.appointments.pacient.Pacient;
 import com.appointments.appointments.pacient.PacientService;
 import com.appointments.appointments.room.Room;
 import com.appointments.appointments.room.RoomService;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-
+@Slf4j
 @Service
 public class AppointmentService {
 
@@ -44,7 +46,7 @@ public class AppointmentService {
         Pacient pacient = pacientService.findByIdEntity(dto.pacientId());
         Doctor doctor = doctorService.findByIdEntity(dto.doctorId());
         Room room = roomService.findByIdEntity(dto.roomId());
-        AppointmentStatus status = appointmentStatusService.findById(1);
+        AppointmentStatus status = appointmentStatusService.findByIdEntity(1);
 
         Appointment appointment = appointmentMapper.toAppointment(dto, pacient, doctor, room, status);
 
@@ -54,7 +56,8 @@ public class AppointmentService {
     }
 
     public AppointmentResponse findById(Integer id){
-         Appointment appointment = appointmentRepository.findById(id).orElse(new Appointment());
+         Appointment appointment = appointmentRepository.findById(id)
+                 .orElseThrow(() -> new EntityNotFoundException("Appointment Not Found"));
 
          return appointmentMapper.toAppointmentDtoResponse(appointment);
     }
@@ -72,7 +75,8 @@ public class AppointmentService {
         Room room = roomService.findByIdEntity(dto.roomId());
         AppointmentStatus status = appointmentStatusService.findById(1);
 
-        Appointment appointment = appointmentRepository.findById(id).orElse(new Appointment());
+        Appointment appointment = appointmentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Appointment Not Found"));
 
         appointment.setDateTime(dto.dateTime());
         appointment.setPacient(pacient);
@@ -85,19 +89,30 @@ public class AppointmentService {
     }
 
     public void deleteById(Integer id){
+        if(!appointmentRepository.existsById(id)) throw new EntityNotFoundException("Appointment Not Found");
         appointmentRepository.deleteById(id);
     }
 
-    public List<AppointmentResponse> findByDoctorIdAndStatus(Integer id, AppointmentStatusEnum status){
-        List<Appointment> appointments = appointmentRepository.findByDoctorIdAndAppointmentStatus_Status(id, status);
+    public List<AppointmentResponse> findByDoctorIdAndStatus(Integer doctorId, AppointmentStatusEnum status){
+
+        if(!doctorService.existById(doctorId)) {
+            throw new EntityNotFoundException("Doctor Not Found");
+        }
+
+        List<Appointment> appointments = appointmentRepository.findByDoctorIdAndAppointmentStatus_Status(doctorId, status);
         return appointments
                 .stream()
                 .map(appointmentMapper::toAppointmentDtoResponse)
                 .toList();
     }
 
-    public List<AppointmentResponse> findByPacientIdAndStatus(Integer id, AppointmentStatusEnum status){
-        List<Appointment> appointments = appointmentRepository.findByPacientIdAndAppointmentStatus_Status(id, status);
+    public List<AppointmentResponse> findByPacientIdAndStatus(Integer pacientId, AppointmentStatusEnum status){
+
+        if(!pacientService.existById(pacientId)) {
+            throw new EntityNotFoundException("Pacient Not Found");
+        }
+
+        List<Appointment> appointments = appointmentRepository.findByPacientIdAndAppointmentStatus_Status(pacientId, status);
         return appointments
                 .stream()
                 .map(appointmentMapper::toAppointmentDtoResponse)
@@ -105,7 +120,8 @@ public class AppointmentService {
     }
 
     public AppointmentResponse cancelAppointment(Integer id){
-        Appointment appointment = appointmentRepository.findById(id).orElse(new Appointment());
+        Appointment appointment = appointmentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Appointment Not Found"));
 
         AppointmentStatus appointmentStatus = appointmentStatusService.findById(2);// 2 : CANCELED
 

@@ -32,7 +32,7 @@ public class AppUserController {
     }
 
     @PatchMapping("/{id}/changePassword")
-    public ResponseEntity<?> changePassword(@PathVariable Integer id, @RequestBody AppUserRequestChangePassword appUserRequestChangePassword){
+    public ResponseEntity<Map<String, String>> changePassword(@PathVariable Integer id, @RequestBody AppUserRequestChangePassword appUserRequestChangePassword){
         appUserService.changePassword(id, appUserRequestChangePassword);
 
         return ResponseEntity.ok(Map.of("message", "Password Updated Succesfully"));

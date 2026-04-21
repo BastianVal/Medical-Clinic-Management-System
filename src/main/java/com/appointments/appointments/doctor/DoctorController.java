@@ -6,6 +6,7 @@ import com.appointments.appointments.appointmentStatus.AppointmentStatusEnum;
 import com.appointments.appointments.doctor.dto.DoctorRequest;
 import com.appointments.appointments.doctor.dto.DoctorResponse;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -39,13 +40,15 @@ public class DoctorController {
     }
 
     @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
     public DoctorResponse updateDoctor(@PathVariable Integer id, @RequestBody DoctorRequest doctorRequest){
         return doctorService.updateDoctor(id, doctorRequest);
     }
 
     @GetMapping("{id}/appointment")
-    public List<AppointmentResponse> findAppointmentByIdAndStatus( @PathVariable Integer id,
-                                                                   @RequestParam AppointmentStatusEnum status){
+    @ResponseStatus(HttpStatus.OK)
+    public List<AppointmentResponse> findAppointmentByIdAndStatus(@PathVariable Integer id,
+                                                                  @RequestParam AppointmentStatusEnum status){
         return appointmentService.findByDoctorIdAndStatus(id, status);
     }
 }

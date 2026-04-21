@@ -39,6 +39,7 @@ public class PacientController {
     }
 
     @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
     public PacientResponse updatePacient(@PathVariable Integer id, @RequestBody PacientRequest pacientRequest){
         return pacientService.updatePacient(id, pacientRequest);
     }
@@ -50,6 +51,7 @@ public class PacientController {
     }
 
     @GetMapping("{id}/appointment")
+    @ResponseStatus(HttpStatus.OK)
     public List<AppointmentResponse> findAppointmentByIdAndStatus(@PathVariable Integer id,
                                                                   @RequestParam AppointmentStatusEnum status){
         return appointmentService.findByPacientIdAndStatus(id, status);

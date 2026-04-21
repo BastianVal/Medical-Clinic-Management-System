@@ -45,7 +45,7 @@ public class AuthService {
 
         Doctor doctor = new Doctor();
         doctor.setName(authDoctorRequest.name());
-        doctor.setDoctorSpecialty(doctorSpecialtyService.findDoctorSpecialtyByIdEntity(authDoctorRequest.specialtyId()));
+        doctor.setDoctorSpecialty(doctorSpecialtyService.findByIdEntity(authDoctorRequest.specialtyId()));
         doctor.setAppUser(appUser);
 
         doctor = doctorService.createDoctorEntity(doctor);

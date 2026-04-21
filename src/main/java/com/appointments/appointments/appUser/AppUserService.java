@@ -2,6 +2,7 @@ package com.appointments.appointments.appUser;
 
 import com.appointments.appointments.appUser.dto.AppUserRequestChangePassword;
 import com.appointments.appointments.appUser.dto.AppUserResponse;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,7 +24,8 @@ public class AppUserService {
     // =========================================================================
 
     public AppUserResponse findAppUserById(Integer id){
-        AppUser appUser = appUserRepository.findById(id).orElse(new AppUser());
+        AppUser appUser = appUserRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Account Not Found"));
 
         return appUserMapper.toAppUserResponse(appUser);
     }
@@ -36,7 +38,8 @@ public class AppUserService {
     }
 
     public void changePassword(Integer id, AppUserRequestChangePassword dto){
-        AppUser appUser = appUserRepository.findById(id).orElse(new AppUser());
+        AppUser appUser = appUserRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Account Not Found"));
 
         if(!dto.oldPassword().equals(appUser.getPassword())){
             throw new IllegalArgumentException("Incorrect Password");
@@ -55,6 +58,7 @@ public class AppUserService {
     }
 
     public AppUser findAppUserByIdEntity(Integer id){
-        return appUserRepository.findById(id).orElse(new AppUser());
+        return appUserRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Account Not Found"));
     }
 }

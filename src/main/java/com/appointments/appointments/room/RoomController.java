@@ -34,6 +34,7 @@ public class RoomController {
     }
 
     @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
     public RoomResponse updateRoom(@PathVariable Integer id, @RequestBody RoomRequest roomRequest){
         return roomService.updateRoom(id, roomRequest);
     }

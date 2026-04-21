@@ -5,6 +5,8 @@ import com.appointments.appointments.room.dto.RoomResponse;
 import com.appointments.appointments.roomStatus.RoomStatus;
 import com.appointments.appointments.roomStatus.RoomStatusEnum;
 import com.appointments.appointments.roomStatus.RoomStatusRepository;
+import com.appointments.appointments.roomStatus.RoomStatusService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,12 +16,12 @@ import java.util.List;
 @Service
 public class RoomService {
     private final RoomRepository roomRepository;
-    private final RoomStatusRepository roomStatusRepository;
+    private final RoomStatusService roomStatusService;
     private final RoomMapper roomMapper;
 
-    public RoomService(RoomRepository roomRepository, RoomStatusRepository roomStatusRepository, RoomMapper roomMapper) {
+    public RoomService(RoomRepository roomRepository, RoomStatusService roomStatusService, RoomMapper roomMapper) {
         this.roomRepository = roomRepository;
-        this.roomStatusRepository = roomStatusRepository;
+        this.roomStatusService = roomStatusService;
         this.roomMapper = roomMapper;
     }
 
@@ -28,7 +30,8 @@ public class RoomService {
     // =========================================================================
 
     public RoomResponse createRoom(RoomRequest dto){
-        RoomStatus roomStatus = roomStatusRepository.findById(dto.roomStatusId()).orElse(new RoomStatus());
+        RoomStatus roomStatus = roomStatusService.findByIdEntity(dto.roomStatusId());
+
         roomStatus.setStatus(RoomStatusEnum.UNOCCUPIED);
 
         Room room = roomMapper.toRoom(dto, roomStatus);
@@ -39,7 +42,8 @@ public class RoomService {
     }
 
     public RoomResponse findById(Integer id){
-        Room room = roomRepository.findById(id).orElse(new Room());
+        Room room = roomRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Room Not Found"));
 
         return roomMapper.toRoomDtoResponse(room);
     }
@@ -52,7 +56,9 @@ public class RoomService {
     }
 
     public RoomResponse updateRoom(Integer id, RoomRequest dto){
-        Room room = roomRepository.findById(id).orElse(new Room());
+        Room room = roomRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Room Not Found"));
+
         room.setNumber(dto.number());
 
         room = roomRepository.save(room);
@@ -61,6 +67,8 @@ public class RoomService {
     }
 
     public void deleteById(Integer id){
+        if(!roomRepository.existsById(id)) throw new EntityNotFoundException("Room Not Found");
+
         roomRepository.deleteById(id);
     }
 
@@ -69,6 +77,7 @@ public class RoomService {
     // =========================================================================
 
     public Room findByIdEntity(Integer id){
-        return roomRepository.findById(id).orElse(new Room());
+        return roomRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Room Not Found"));
     }
 }

@@ -29,6 +29,7 @@ public class CoordinatorController {
     }
 
     @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
     public CoordinatorResponse updateCoordinator(@PathVariable Integer id ,@RequestBody CoordinatorRequest dto){
         return coordinatorService.updateCoordinator(id, dto);
     }

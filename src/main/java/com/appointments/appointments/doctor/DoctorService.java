@@ -3,6 +3,7 @@ package com.appointments.appointments.doctor;
 import com.appointments.appointments.doctor.dto.DoctorRequest;
 import com.appointments.appointments.doctor.dto.DoctorResponse;
 import com.appointments.appointments.doctorSpecialty.DoctorSpecialtyService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -25,7 +26,8 @@ public class DoctorService {
     // =========================================================================
 
     public DoctorResponse findById(Integer id){
-        Doctor doctor = doctorRepository.findById(id).orElse(new Doctor());
+        Doctor doctor = doctorRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Doctor Not Found"));
 
         return doctorMapper.toDoctorDtoResponse(doctor);
     }
@@ -38,7 +40,9 @@ public class DoctorService {
     }
 
     public DoctorResponse updateDoctor(Integer id, DoctorRequest dto){
-        Doctor doctor = doctorRepository.findById(id).orElse(new Doctor());
+        Doctor doctor = doctorRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Doctor Not Found"));
+
         doctor.setName(dto.name());
 
         doctor.setDoctorSpecialty(
@@ -51,6 +55,8 @@ public class DoctorService {
     }
 
     public void deleteById(Integer id){
+        if(!doctorRepository.existsById(id)) throw new EntityNotFoundException("Doctor Not Found");
+
         doctorRepository.deleteById(id);
     }
 
@@ -64,6 +70,11 @@ public class DoctorService {
     }
 
     public Doctor findByIdEntity(Integer id){
-        return doctorRepository.findById(id).orElse(new Doctor());
+        return doctorRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Doctor Not Found"));
+    }
+
+    public Boolean existById(Integer id){
+        return doctorRepository.existsById(id);
     }
 }

@@ -46,6 +46,7 @@ public class AppointmentController {
     }
 
     @PatchMapping("/{id}/cancel")
+    @ResponseStatus(HttpStatus.OK)
     public AppointmentResponse cancelAppointment(@PathVariable Integer id){
         return appointmentService.cancelAppointment(id);
     }
