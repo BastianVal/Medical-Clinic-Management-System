@@ -14,6 +14,7 @@ import com.appointments.appointments.doctor.DoctorService;
 import com.appointments.appointments.doctor.dto.DoctorResponse;
 import com.appointments.appointments.doctorSpecialty.DoctorSpecialtyService;
 import jakarta.transaction.Transactional;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,21 +25,23 @@ public class AuthService {
     private final DoctorSpecialtyService doctorSpecialtyService;
     private final CoordinatorService coordinatorService;
     private final CoordinatorMapper coordinatorMapper;
+    private final PasswordEncoder passwordEncoder;
 
-    public AuthService(AppUserService appUserService, DoctorService doctorService, DoctorMapper doctorMapper, DoctorSpecialtyService doctorSpecialtyService, CoordinatorService coordinatorService, CoordinatorMapper coordinatorMapper) {
+    public AuthService(AppUserService appUserService, DoctorService doctorService, DoctorMapper doctorMapper, DoctorSpecialtyService doctorSpecialtyService, CoordinatorService coordinatorService, CoordinatorMapper coordinatorMapper, PasswordEncoder passwordEncoder) {
         this.appUserService = appUserService;
         this.doctorService = doctorService;
         this.doctorMapper = doctorMapper;
         this.doctorSpecialtyService = doctorSpecialtyService;
         this.coordinatorService = coordinatorService;
         this.coordinatorMapper = coordinatorMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
     public DoctorResponse registerDoctor(AuthDoctorRequest authDoctorRequest){
         AppUser appUser = new AppUser();
         appUser.setEmail(authDoctorRequest.email());
-        appUser.setPassword(authDoctorRequest.password());
+        appUser.setPassword(passwordEncoder.encode(authDoctorRequest.password()));
         appUser.setRole(authDoctorRequest.role());
 
         appUser = appUserService.createAppUserEntity(appUser);
@@ -57,7 +60,7 @@ public class AuthService {
     public CoordinatorResponse registerCoordinator(AuthCoordinatorRequest authCoordinatorRequest){
         AppUser appUser = new AppUser();
         appUser.setEmail(authCoordinatorRequest.email());
-        appUser.setPassword(authCoordinatorRequest.password());
+        appUser.setPassword(passwordEncoder.encode(authCoordinatorRequest.password()));
         appUser.setRole(authCoordinatorRequest.role());
 
         appUser = appUserService.createAppUserEntity(appUser);

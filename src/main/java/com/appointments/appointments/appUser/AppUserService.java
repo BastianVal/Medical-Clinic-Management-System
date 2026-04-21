@@ -3,14 +3,18 @@ package com.appointments.appointments.appUser;
 import com.appointments.appointments.appUser.dto.AppUserRequestChangePassword;
 import com.appointments.appointments.appUser.dto.AppUserResponse;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class AppUserService {
+public class AppUserService implements UserDetailsService {
     private final AppUserRepository appUserRepository;
     private final AppUserMapper appUserMapper;
 
@@ -60,5 +64,21 @@ public class AppUserService {
     public AppUser findAppUserByIdEntity(Integer id){
         return appUserRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Account Not Found"));
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        AppUser appUser = appUserRepository.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Email Not Found"));
+
+        List<GrantedAuthority> authorities = new ArrayList<>();
+
+        authorities.add(new SimpleGrantedAuthority(appUser.getRole().name()));
+
+        return User.builder()
+                .username(appUser.getEmail())
+                .password(appUser.getPassword())
+                .authorities(authorities)
+                .build();
     }
 }
