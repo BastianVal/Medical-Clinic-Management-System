@@ -4,6 +4,7 @@ import com.appointments.appointments.appUser.dto.AppUserRequestChangePassword;
 import com.appointments.appointments.appUser.dto.AppUserResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,7 +22,7 @@ public class AppUserController {
 
     @GetMapping("{id}")
     @ResponseStatus(HttpStatus.OK)
-    public AppUserResponse findAppUserById(Integer id){
+    public AppUserResponse findAppUserById(@PathVariable Integer id){
         return appUserService.findAppUserById(id);
     }
 
@@ -31,9 +32,10 @@ public class AppUserController {
         return appUserService.findAllAppUser();
     }
 
-    @PatchMapping("/{id}/changePassword")
-    public ResponseEntity<Map<String, String>> changePassword(@PathVariable Integer id, @RequestBody AppUserRequestChangePassword appUserRequestChangePassword){
-        appUserService.changePassword(id, appUserRequestChangePassword);
+    @PatchMapping("me/changePassword")
+    public ResponseEntity<Map<String, String>> changePassword(Authentication authentication,
+                                                              @RequestBody AppUserRequestChangePassword appUserRequestChangePassword){
+        appUserService.changePassword(authentication.getName(), appUserRequestChangePassword);
 
         return ResponseEntity.ok(Map.of("message", "Password Updated Succesfully"));
     }

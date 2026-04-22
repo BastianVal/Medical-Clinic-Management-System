@@ -7,6 +7,7 @@ import com.appointments.appointments.doctor.dto.DoctorRequest;
 import com.appointments.appointments.doctor.dto.DoctorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -29,24 +30,28 @@ public class DoctorController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('COORDINATOR')")
     public List<DoctorResponse> findAll(){
         return doctorService.findAll();
     }
 
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasRole('COORDINATOR')")
     public void deleteById(@PathVariable Integer id){
         doctorService.deleteById(id);
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasAnyRole('COORDINATOR', 'DOCTOR')")
     public DoctorResponse updateDoctor(@PathVariable Integer id, @RequestBody DoctorRequest doctorRequest){
         return doctorService.updateDoctor(id, doctorRequest);
     }
 
     @GetMapping("{id}/appointment")
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasAnyRole('COORDINATOR', 'DOCTOR')")
     public List<AppointmentResponse> findAppointmentByIdAndStatus(@PathVariable Integer id,
                                                                   @RequestParam AppointmentStatusEnum status){
         return appointmentService.findByDoctorIdAndStatus(id, status);

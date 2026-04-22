@@ -3,6 +3,7 @@ package com.appointments.appointments.appoinment;
 import com.appointments.appointments.appoinment.dto.AppointmentRequest;
 import com.appointments.appointments.appoinment.dto.AppointmentResponse;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -17,6 +18,7 @@ public class AppointmentController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('COORDINATOR')")
     public AppointmentResponse createAppointment(@RequestBody AppointmentRequest dto){
         return appointmentService.createAppointment(dto);
     }
@@ -35,18 +37,21 @@ public class AppointmentController {
 
     @PutMapping("{id}")
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('COORDINATOR')")
     public AppointmentResponse updateAppointment(@PathVariable Integer id ,@RequestBody AppointmentRequest appointmentRequest){
         return appointmentService.updateAppointment(id, appointmentRequest);
     }
 
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasRole('COORDINATOR')")
     public void deleteById(@PathVariable Integer id){
         appointmentService.deleteById(id);
     }
 
     @PatchMapping("/{id}/cancel")
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('COORDINATOR')")
     public AppointmentResponse cancelAppointment(@PathVariable Integer id){
         return appointmentService.cancelAppointment(id);
     }

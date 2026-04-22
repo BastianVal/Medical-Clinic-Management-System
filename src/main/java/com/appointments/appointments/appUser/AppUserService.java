@@ -3,12 +3,15 @@ package com.appointments.appointments.appUser;
 import com.appointments.appointments.appUser.dto.AppUserRequestChangePassword;
 import com.appointments.appointments.appUser.dto.AppUserResponse;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,10 +20,12 @@ import java.util.List;
 public class AppUserService implements UserDetailsService {
     private final AppUserRepository appUserRepository;
     private final AppUserMapper appUserMapper;
+    private final PasswordEncoder passwordEncoder;
 
-    public AppUserService(AppUserRepository appUserRepository, AppUserMapper appUserMapper) {
+    public AppUserService(AppUserRepository appUserRepository, AppUserMapper appUserMapper, PasswordEncoder passwordEncoder) {
         this.appUserRepository = appUserRepository;
         this.appUserMapper = appUserMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
     // =========================================================================
@@ -41,14 +46,14 @@ public class AppUserService implements UserDetailsService {
                 .toList();
     }
 
-    public void changePassword(Integer id, AppUserRequestChangePassword dto){
-        AppUser appUser = appUserRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Account Not Found"));
+    public void changePassword(String email, AppUserRequestChangePassword dto){
+        AppUser appUser = appUserRepository.findByEmail(email)
+                .orElseThrow(() -> new BadCredentialsException("Email Not Found"));
 
-        if(!dto.oldPassword().equals(appUser.getPassword())){
-            throw new IllegalArgumentException("Incorrect Password");
+        if(!passwordEncoder.matches(dto.oldPassword(), appUser.getPassword())){
+            throw new BadCredentialsException("Incorrect Password");
         }
-        appUser.setPassword(dto.newPassword());
+        appUser.setPassword(passwordEncoder.encode(dto.newPassword()));
 
         appUserRepository.save(appUser);
     }
