@@ -1,8 +1,11 @@
 package com.appointments.appointments.patient;
 
+import com.appointments.appointments.appUser.AppUser;
+import com.appointments.appointments.appUser.AppUserService;
 import com.appointments.appointments.patient.dto.PatientRequest;
 import com.appointments.appointments.patient.dto.PatientResponse;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,10 +14,12 @@ import java.util.List;
 public class PatientService {
     private final PatientRepository patientRepository;
     private final PatientMapper patientMapper;
+    private final AppUserService appUserService;
 
-    public PatientService(PatientRepository patientRepository, PatientMapper patientMapper) {
+    public PatientService(PatientRepository patientRepository, PatientMapper patientMapper, AppUserService appUserService) {
         this.patientRepository = patientRepository;
         this.patientMapper = patientMapper;
+        this.appUserService = appUserService;
     }
 
     // =========================================================================
@@ -29,10 +34,22 @@ public class PatientService {
         return patientMapper.toPacientResponse(patient);
     }
 
-    public PatientResponse findById(Integer id){
-        Patient patient = patientRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Patient Not Found"));
+    public PatientResponse findById(String doctorEmail, Integer id){
+        AppUser appUser = appUserService.findByEmail(doctorEmail);
 
+        String role = appUser.getRole().name();
+
+        Patient patient = new Patient();
+
+        if(role.equals("ROLE_COORDINATOR")){
+            patient = patientRepository.findById(id)
+                    .orElseThrow(() -> new EntityNotFoundException("Patient Not Found"));
+        }
+        else if(role.equals("ROLE_DOCTOR")){
+            Integer doctorId = appUser.getDoctor().getId();
+            patient = patientRepository.findByDoctorsPatient(id, doctorId)
+                    .orElseThrow(() -> new EntityNotFoundException("Patient Not Found"));
+        }
         return patientMapper.toPacientResponse(patient);
     }
 
@@ -63,7 +80,7 @@ public class PatientService {
 
     public List<PatientResponse> findByDoctorsPatient(String name, Integer doctorId){
 
-        return patientRepository.findByDoctorsPatient(name, doctorId)
+        return patientRepository.findByDoctorsPatients(name, doctorId)
                 .stream()
                 .map(patientMapper::toPacientResponse)
                 .toList();

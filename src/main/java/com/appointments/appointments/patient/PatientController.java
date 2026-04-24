@@ -1,5 +1,6 @@
 package com.appointments.appointments.patient;
 
+import com.appointments.appointments.appUser.AppUser;
 import com.appointments.appointments.appoinment.AppointmentService;
 import com.appointments.appointments.appoinment.dto.AppointmentResponse;
 import com.appointments.appointments.appointmentStatus.AppointmentStatusEnum;
@@ -7,6 +8,8 @@ import com.appointments.appointments.patient.dto.PatientRequest;
 import com.appointments.appointments.patient.dto.PatientResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -30,8 +33,12 @@ public class PatientController {
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public PatientResponse findById(@PathVariable Integer id){
-        return patientService.findById(id);
+    @PreAuthorize("hasAnyRole('COORDINATOR', 'DOCTOR')")
+    public PatientResponse findById(Authentication authentication,
+                                    @PathVariable Integer id){
+        return patientService.findById(
+                authentication.getName(),
+                id);
     }
 
     @GetMapping
