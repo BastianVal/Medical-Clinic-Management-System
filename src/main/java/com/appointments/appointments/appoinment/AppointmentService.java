@@ -7,8 +7,8 @@ import com.appointments.appointments.appointmentStatus.AppointmentStatusEnum;
 import com.appointments.appointments.appointmentStatus.AppointmentStatusService;
 import com.appointments.appointments.doctor.Doctor;
 import com.appointments.appointments.doctor.DoctorService;
-import com.appointments.appointments.pacient.Pacient;
-import com.appointments.appointments.pacient.PacientService;
+import com.appointments.appointments.patient.Patient;
+import com.appointments.appointments.patient.PatientService;
 import com.appointments.appointments.room.Room;
 import com.appointments.appointments.room.RoomService;
 import jakarta.persistence.EntityNotFoundException;
@@ -21,21 +21,21 @@ import java.util.List;
 public class AppointmentService {
 
     private final AppointmentRepository appointmentRepository;
-    private final PacientService pacientService;
+    private final PatientService patientService;
     private final DoctorService doctorService;
     private final RoomService roomService;
     private final AppointmentStatusService appointmentStatusService;
     private final AppointmentMapper appointmentMapper;
 
     public AppointmentService(AppointmentRepository appointmentRepository,
-                              PacientService pacientService,
+                              PatientService patientService,
                               DoctorService doctorService,
                               RoomService roomService,
                               AppointmentStatusService appointmentStatusService,
                               AppointmentMapper appointmentMapper) {
 
         this.appointmentRepository = appointmentRepository;
-        this.pacientService = pacientService;
+        this.patientService = patientService;
         this.doctorService = doctorService;
         this.roomService = roomService;
         this.appointmentStatusService = appointmentStatusService;
@@ -43,14 +43,16 @@ public class AppointmentService {
     }
 
     public AppointmentResponse createAppointment(AppointmentRequest dto){
-        Pacient pacient = pacientService.findByIdEntity(dto.pacientId());
+        Patient patient = patientService.findByIdEntity(dto.pacientId());
         Doctor doctor = doctorService.findByIdEntity(dto.doctorId());
         Room room = roomService.findByIdEntity(dto.roomId());
         AppointmentStatus status = appointmentStatusService.findByIdEntity(1);
 
-        Appointment appointment = appointmentMapper.toAppointment(dto, pacient, doctor, room, status);
+        Appointment appointment = appointmentMapper.toAppointment(dto, patient, doctor, room, status);
 
         appointmentRepository.save(appointment);
+
+        doctorService.addPatient(doctor, patient);
 
         return appointmentMapper.toAppointmentDtoResponse(appointment);
     }
@@ -70,7 +72,7 @@ public class AppointmentService {
     }
 
     public AppointmentResponse updateAppointment(Integer id, AppointmentRequest dto){
-        Pacient pacient = pacientService.findByIdEntity(dto.pacientId());
+        Patient patient = patientService.findByIdEntity(dto.pacientId());
         Doctor doctor = doctorService.findByIdEntity(dto.doctorId());
         Room room = roomService.findByIdEntity(dto.roomId());
         AppointmentStatus status = appointmentStatusService.findById(1);
@@ -79,7 +81,7 @@ public class AppointmentService {
                 .orElseThrow(() -> new EntityNotFoundException("Appointment Not Found"));
 
         appointment.setDateTime(dto.dateTime());
-        appointment.setPacient(pacient);
+        appointment.setPatient(patient);
         appointment.setDoctor(doctor);
         appointment.setRoom(room);
 
@@ -106,13 +108,13 @@ public class AppointmentService {
                 .toList();
     }
 
-    public List<AppointmentResponse> findByPacientIdAndStatus(Integer pacientId, AppointmentStatusEnum status){
+    public List<AppointmentResponse> findByPatientIdAndStatus(Integer pacientId, AppointmentStatusEnum status){
 
-        if(!pacientService.existById(pacientId)) {
+        if(!patientService.existById(pacientId)) {
             throw new EntityNotFoundException("Pacient Not Found");
         }
 
-        List<Appointment> appointments = appointmentRepository.findByPacientIdAndAppointmentStatus_Status(pacientId, status);
+        List<Appointment> appointments = appointmentRepository.findByPatientIdAndAppointmentStatus_Status(pacientId, status);
         return appointments
                 .stream()
                 .map(appointmentMapper::toAppointmentDtoResponse)

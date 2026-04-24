@@ -3,6 +3,7 @@ package com.appointments.appointments.doctor;
 import com.appointments.appointments.doctor.dto.DoctorRequest;
 import com.appointments.appointments.doctor.dto.DoctorResponse;
 import com.appointments.appointments.doctorSpecialty.DoctorSpecialtyService;
+import com.appointments.appointments.patient.Patient;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -76,5 +77,15 @@ public class DoctorService {
 
     public Boolean existById(Integer id){
         return doctorRepository.existsById(id);
+    }
+
+    public Doctor addPatient(Doctor doctor, Patient patient){
+        doctor.addPatient(patient);
+        return doctorRepository.save(doctor);
+    }
+
+    public Doctor removePatient(Doctor doctor, Patient patient){
+        doctor.removePatient(patient);
+        return doctorRepository.save(doctor);
     }
 }

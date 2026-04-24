@@ -1,22 +1,21 @@
-package com.appointments.appointments.pacient;
+package com.appointments.appointments.patient;
 
 import com.appointments.appointments.appoinment.Appointment;
+import com.appointments.appointments.doctor.Doctor;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Pacient {
+public class Patient {
     @Id
     @GeneratedValue
     private Integer id;
@@ -25,7 +24,10 @@ public class Pacient {
 
     private String email;
 
-    @OneToMany(mappedBy = "pacient")
+    @OneToMany(mappedBy = "patient")
     @JsonIgnore
     private List<Appointment> appointments;
+
+    @ManyToMany(mappedBy = "patients")
+    private Set<Doctor> doctors = new HashSet<>();
 }

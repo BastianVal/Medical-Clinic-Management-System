@@ -1,57 +1,57 @@
-package com.appointments.appointments.pacient;
+package com.appointments.appointments.patient;
 
 import com.appointments.appointments.appoinment.AppointmentService;
 import com.appointments.appointments.appoinment.dto.AppointmentResponse;
 import com.appointments.appointments.appointmentStatus.AppointmentStatusEnum;
-import com.appointments.appointments.pacient.dto.PacientRequest;
-import com.appointments.appointments.pacient.dto.PacientResponse;
+import com.appointments.appointments.patient.dto.PatientRequest;
+import com.appointments.appointments.patient.dto.PatientResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/pacient")
-public class PacientController {
-    private final PacientService pacientService;
+@RequestMapping("/patient")
+public class PatientController {
+    private final PatientService patientService;
     private final AppointmentService appointmentService;
 
-    public PacientController(PacientService pacientService, AppointmentService appointmentService) {
-        this.pacientService = pacientService;
+    public PatientController(PatientService patientService, AppointmentService appointmentService) {
+        this.patientService = patientService;
         this.appointmentService = appointmentService;
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('COORDINATOR')")
-    public PacientResponse createPacient(@RequestBody PacientRequest pacientRequest){
-        return pacientService.createPacient(pacientRequest);
+    public PatientResponse createPacient(@RequestBody PatientRequest patientRequest){
+        return patientService.createPacient(patientRequest);
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public PacientResponse findById(@PathVariable Integer id){
-        return pacientService.findById(id);
+    public PatientResponse findById(@PathVariable Integer id){
+        return patientService.findById(id);
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasRole('COORDINATOR')")
-    public List<PacientResponse> findAll(){
-        return pacientService.findAll();
+    public List<PatientResponse> findAll(){
+        return patientService.findAll();
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public PacientResponse updatePacient(@PathVariable Integer id, @RequestBody PacientRequest pacientRequest){
-        return pacientService.updatePacient(id, pacientRequest);
+    public PatientResponse updatePacient(@PathVariable Integer id, @RequestBody PatientRequest patientRequest){
+        return patientService.updatePacient(id, patientRequest);
     }
 
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasRole('COORDINATOR')")
     public void deleteById(@PathVariable Integer id){
-        pacientService.deleteById(id);
+        patientService.deleteById(id);
     }
 
     @GetMapping("{id}/appointment")
@@ -59,6 +59,6 @@ public class PacientController {
     @PreAuthorize("hasRole('COORDINATOR')")
     public List<AppointmentResponse> findAppointmentByIdAndStatus(@PathVariable Integer id,
                                                                   @RequestParam AppointmentStatusEnum status){
-        return appointmentService.findByPacientIdAndStatus(id, status);
+        return appointmentService.findByPatientIdAndStatus(id, status);
     }
 }

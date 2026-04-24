@@ -58,6 +58,11 @@ public class AppUserService implements UserDetailsService {
         appUserRepository.save(appUser);
     }
 
+    public AppUser findByEmail(String email){
+        return appUserRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("Email Not Found"));
+    }
+
     // =========================================================================
     // METHODS FOR THE SERVICES (Retrieves Entities)
     // =========================================================================

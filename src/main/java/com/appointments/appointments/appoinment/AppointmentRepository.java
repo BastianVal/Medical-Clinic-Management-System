@@ -7,5 +7,5 @@ import java.util.List;
 public interface AppointmentRepository extends JpaRepository<Appointment, Integer> {
     List<Appointment> findByDoctorIdAndAppointmentStatus_Status(Integer doctorId, AppointmentStatusEnum status);
 
-    List<Appointment> findByPacientIdAndAppointmentStatus_Status(Integer pacientId, AppointmentStatusEnum status);
+    List<Appointment> findByPatientIdAndAppointmentStatus_Status(Integer patientId, AppointmentStatusEnum status);
 }

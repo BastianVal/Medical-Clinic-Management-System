@@ -4,11 +4,10 @@ import com.appointments.appointments.coordinator.Coordinator;
 import com.appointments.appointments.doctor.Doctor;
 import com.appointments.appointments.auth.role.Role;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity

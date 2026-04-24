@@ -2,7 +2,7 @@ package com.appointments.appointments.appoinment;
 
 import com.appointments.appointments.appointmentStatus.AppointmentStatus;
 import com.appointments.appointments.doctor.Doctor;
-import com.appointments.appointments.pacient.Pacient;
+import com.appointments.appointments.patient.Patient;
 import com.appointments.appointments.room.Room;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -31,8 +31,8 @@ public class Appointment {
     private AppointmentStatus appointmentStatus;
 
     @ManyToOne
-    @JoinColumn(name = "pacient_id")
-    private Pacient pacient;
+    @JoinColumn(name = "patient_id")
+    private Patient patient;
 
     @ManyToOne
     @JoinColumn(name = "doctor_id")
