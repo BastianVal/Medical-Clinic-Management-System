@@ -7,8 +7,11 @@ import java.time.LocalDateTime;
 public record AppointmentResponse(
         Integer id,
         LocalDateTime dateTime,
-        String pacientName,
+        Integer patientId,
+        String patientName,
+        Integer doctorId,
         String doctorName,
+        Integer roomId,
         Integer roomNumber,
         AppointmentStatusEnum status
 ) {

@@ -29,8 +29,11 @@ public class AppointmentMapper {
         return new AppointmentResponse(
                 appointment.getId(),
                 appointment.getDateTime(),
+                appointment.getPatient().getId(),
                 appointment.getPatient().getName(),
+                appointment.getDoctor().getId(),
                 appointment.getDoctor().getName(),
+                appointment.getRoom().getId(),
                 appointment.getRoom().getNumber(),
                 appointment.getAppointmentStatus().getStatus()
         );
