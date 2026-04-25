@@ -2,14 +2,12 @@ package com.appointments.appointments.room;
 
 import com.appointments.appointments.appoinment.Appointment;
 import com.appointments.appointments.roomStatus.RoomStatus;
-import com.appointments.appointments.roomStatus.RoomStatusEnum;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
-
 import java.util.List;
 
 @Data

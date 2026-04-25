@@ -14,8 +14,10 @@ import com.appointments.appointments.room.RoomService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
+
 @Slf4j
 @Service
 public class AppointmentService {
@@ -132,5 +134,17 @@ public class AppointmentService {
         appointment = appointmentRepository.save(appointment);
 
         return appointmentMapper.toAppointmentDtoResponse(appointment);
+    }
+
+    public List<AppointmentResponse> findByDateAndDoctors(LocalDate date, List<Integer> doctorIds){
+         return appointmentRepository.
+                 findByDateTimeBetweenAndDoctorIdIn(
+                         date.atStartOfDay(),
+                         date.atTime(LocalTime.MAX),
+                         doctorIds
+                 )
+                 .stream()
+                 .map(appointmentMapper::toAppointmentDtoResponse)
+                 .toList();
     }
 }

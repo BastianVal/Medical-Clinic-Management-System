@@ -2,9 +2,11 @@ package com.appointments.appointments.appoinment;
 
 import com.appointments.appointments.appoinment.dto.AppointmentRequest;
 import com.appointments.appointments.appoinment.dto.AppointmentResponse;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -25,12 +27,14 @@ public class AppointmentController {
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('COORDINATOR')")
     public AppointmentResponse findById(@PathVariable Integer id){
         return appointmentService.findById(id);
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('COORDINATOR')")
     public List<AppointmentResponse> findAll(){
         return appointmentService.findAll();
     }
@@ -54,5 +58,13 @@ public class AppointmentController {
     @PreAuthorize("hasRole('COORDINATOR')")
     public AppointmentResponse cancelAppointment(@PathVariable Integer id){
         return appointmentService.cancelAppointment(id);
+    }
+
+    @GetMapping("/dashboard")
+    @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('COORDINATOR')")
+    public List<AppointmentResponse> findByDateAndDoctors(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+                                                          @RequestParam List<Integer> doctorIds){
+        return appointmentService.findByDateAndDoctors(date, doctorIds);
     }
 }

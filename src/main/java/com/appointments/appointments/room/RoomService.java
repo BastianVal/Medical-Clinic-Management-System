@@ -4,13 +4,9 @@ import com.appointments.appointments.room.dto.RoomRequest;
 import com.appointments.appointments.room.dto.RoomResponse;
 import com.appointments.appointments.roomStatus.RoomStatus;
 import com.appointments.appointments.roomStatus.RoomStatusEnum;
-import com.appointments.appointments.roomStatus.RoomStatusRepository;
 import com.appointments.appointments.roomStatus.RoomStatusService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-
 import java.util.List;
 
 @Service

@@ -4,7 +4,6 @@ import com.appointments.appointments.appUser.dto.AppUserRequestChangePassword;
 import com.appointments.appointments.appUser.dto.AppUserResponse;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -58,7 +57,7 @@ public class AppUserService implements UserDetailsService {
         appUserRepository.save(appUser);
     }
 
-    public AppUser findByEmail(String email){
+    public AppUser findByEmailEntity(String email){
         return appUserRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("Email Not Found"));
     }

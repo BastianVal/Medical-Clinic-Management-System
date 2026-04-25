@@ -1,6 +1,5 @@
 package com.appointments.appointments.patient;
 
-import com.appointments.appointments.appUser.AppUser;
 import com.appointments.appointments.appoinment.AppointmentService;
 import com.appointments.appointments.appoinment.dto.AppointmentResponse;
 import com.appointments.appointments.appointmentStatus.AppointmentStatusEnum;
@@ -9,7 +8,6 @@ import com.appointments.appointments.patient.dto.PatientResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -27,7 +25,7 @@ public class PatientController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('COORDINATOR')")
-    public PatientResponse createPacient(@RequestBody PatientRequest patientRequest){
+    public PatientResponse createPatient(@RequestBody PatientRequest patientRequest){
         return patientService.createPacient(patientRequest);
     }
 
@@ -43,14 +41,15 @@ public class PatientController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasRole('COORDINATOR')")
-    public List<PatientResponse> findAll(){
-        return patientService.findAll();
+    @PreAuthorize("hasAnyRole('COORDINATOR', 'DOCTOR')")
+    public List<PatientResponse> findAll(Authentication authentication){
+        return patientService.findAll(authentication.getName());
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public PatientResponse updatePacient(@PathVariable Integer id, @RequestBody PatientRequest patientRequest){
+    @PreAuthorize("hasRole('COORDINATOR')")
+    public PatientResponse updatePatient(@PathVariable Integer id, @RequestBody PatientRequest patientRequest){
         return patientService.updatePacient(id, patientRequest);
     }
 
@@ -67,5 +66,13 @@ public class PatientController {
     public List<AppointmentResponse> findAppointmentByIdAndStatus(@PathVariable Integer id,
                                                                   @RequestParam AppointmentStatusEnum status){
         return appointmentService.findByPatientIdAndStatus(id, status);
+    }
+
+    @GetMapping("/search")
+    @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasAnyRole('COORDINATOR', 'DOCTOR')")
+    public List<PatientResponse> searchPatientName(Authentication authentication,
+                                                          @RequestParam String name){
+        return patientService.searchPatientName(authentication.getName(), name);
     }
 }
