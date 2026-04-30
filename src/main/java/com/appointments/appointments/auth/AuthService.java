@@ -4,6 +4,8 @@ import com.appointments.appointments.appUser.AppUser;
 import com.appointments.appointments.appUser.AppUserService;
 import com.appointments.appointments.auth.dto.AuthCoordinatorRequest;
 import com.appointments.appointments.auth.dto.AuthDoctorRequest;
+import com.appointments.appointments.auth.dto.LoginRequest;
+import com.appointments.appointments.auth.dto.LoginResponse;
 import com.appointments.appointments.coordinator.Coordinator;
 import com.appointments.appointments.coordinator.CoordinatorMapper;
 import com.appointments.appointments.coordinator.dto.CoordinatorResponse;
@@ -13,7 +15,10 @@ import com.appointments.appointments.doctor.DoctorMapper;
 import com.appointments.appointments.doctor.DoctorService;
 import com.appointments.appointments.doctor.dto.DoctorResponse;
 import com.appointments.appointments.doctorSpecialty.DoctorSpecialtyService;
+import com.appointments.appointments.jwt.JwtService;
 import jakarta.transaction.Transactional;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -26,8 +31,10 @@ public class AuthService {
     private final CoordinatorService coordinatorService;
     private final CoordinatorMapper coordinatorMapper;
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
 
-    public AuthService(AppUserService appUserService, DoctorService doctorService, DoctorMapper doctorMapper, DoctorSpecialtyService doctorSpecialtyService, CoordinatorService coordinatorService, CoordinatorMapper coordinatorMapper, PasswordEncoder passwordEncoder) {
+    public AuthService(AppUserService appUserService, DoctorService doctorService, DoctorMapper doctorMapper, DoctorSpecialtyService doctorSpecialtyService, CoordinatorService coordinatorService, CoordinatorMapper coordinatorMapper, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtService jwtService) {
         this.appUserService = appUserService;
         this.doctorService = doctorService;
         this.doctorMapper = doctorMapper;
@@ -35,6 +42,8 @@ public class AuthService {
         this.coordinatorService = coordinatorService;
         this.coordinatorMapper = coordinatorMapper;
         this.passwordEncoder = passwordEncoder;
+        this.authenticationManager = authenticationManager;
+        this.jwtService = jwtService;
     }
 
     @Transactional
@@ -72,5 +81,19 @@ public class AuthService {
         coordinator = coordinatorService.createCoordinatorEntity(coordinator);
 
         return coordinatorMapper.toCoordinatorResponse(coordinator);
+    }
+
+    public LoginResponse login(LoginRequest loginRequest){
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        loginRequest.email(),
+                        loginRequest.password())
+        );
+
+        AppUser appUser = appUserService.findByEmailEntity(loginRequest.email());
+
+        String jwtToken = jwtService.generateToken(appUser);
+
+        return new LoginResponse(jwtToken);
     }
 }

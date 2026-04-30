@@ -2,6 +2,8 @@ package com.appointments.appointments.auth;
 
 import com.appointments.appointments.auth.dto.AuthCoordinatorRequest;
 import com.appointments.appointments.auth.dto.AuthDoctorRequest;
+import com.appointments.appointments.auth.dto.LoginRequest;
+import com.appointments.appointments.auth.dto.LoginResponse;
 import com.appointments.appointments.coordinator.dto.CoordinatorResponse;
 import com.appointments.appointments.doctor.dto.DoctorResponse;
 import org.springframework.http.HttpStatus;
@@ -26,5 +28,11 @@ public class AuthController {
     @ResponseStatus(HttpStatus.CREATED)
     public CoordinatorResponse registerCoordinator(@RequestBody AuthCoordinatorRequest authCoordinatorRequest){
         return authService.registerCoordinator(authCoordinatorRequest);
+    }
+
+    @PostMapping("/login")
+    @ResponseStatus(HttpStatus.OK)
+    public LoginResponse login(@RequestBody LoginRequest loginRequest){
+        return authService.login(loginRequest);
     }
 }
