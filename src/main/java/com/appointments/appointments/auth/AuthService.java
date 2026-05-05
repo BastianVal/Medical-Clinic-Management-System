@@ -6,6 +6,7 @@ import com.appointments.appointments.auth.dto.AuthCoordinatorRequest;
 import com.appointments.appointments.auth.dto.AuthDoctorRequest;
 import com.appointments.appointments.auth.dto.LoginRequest;
 import com.appointments.appointments.auth.dto.LoginResponse;
+import com.appointments.appointments.auth.role.Role;
 import com.appointments.appointments.coordinator.Coordinator;
 import com.appointments.appointments.coordinator.CoordinatorMapper;
 import com.appointments.appointments.coordinator.dto.CoordinatorResponse;
@@ -47,11 +48,12 @@ public class AuthService {
     }
 
     @Transactional
-    public DoctorResponse registerDoctor(AuthDoctorRequest authDoctorRequest){
+    public DoctorResponse registerDoctor(AuthDoctorRequest authDoctorRequest) {
         AppUser appUser = new AppUser();
         appUser.setEmail(authDoctorRequest.email());
         appUser.setPassword(passwordEncoder.encode(authDoctorRequest.password()));
-        appUser.setRole(authDoctorRequest.role());
+//        appUser.setRole(authDoctorRequest.role());
+        appUser.setRole(Role.ROLE_DOCTOR);
 
         appUser = appUserService.createAppUserEntity(appUser);
 
@@ -66,11 +68,12 @@ public class AuthService {
     }
 
     @Transactional
-    public CoordinatorResponse registerCoordinator(AuthCoordinatorRequest authCoordinatorRequest){
+    public CoordinatorResponse registerCoordinator(AuthCoordinatorRequest authCoordinatorRequest) {
         AppUser appUser = new AppUser();
         appUser.setEmail(authCoordinatorRequest.email());
         appUser.setPassword(passwordEncoder.encode(authCoordinatorRequest.password()));
-        appUser.setRole(authCoordinatorRequest.role());
+//        appUser.setRole(authCoordinatorRequest.role());
+        appUser.setRole(Role.ROLE_COORDINATOR);
 
         appUser = appUserService.createAppUserEntity(appUser);
 
@@ -83,7 +86,7 @@ public class AuthService {
         return coordinatorMapper.toCoordinatorResponse(coordinator);
     }
 
-    public LoginResponse login(LoginRequest loginRequest){
+    public LoginResponse login(LoginRequest loginRequest) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.email(),
@@ -94,6 +97,17 @@ public class AuthService {
 
         String jwtToken = jwtService.generateToken(appUser);
 
-        return new LoginResponse(jwtToken);
+        if (appUser.getRole().equals(Role.ROLE_COORDINATOR)) {
+            return new LoginResponse(jwtToken,
+                    appUser.getId(), appUser.getEmail(), appUser.getRole().name(),
+                    appUser.getCoordinator().getId(), appUser.getCoordinator().getName()
+            );
+        }
+        else {
+            return new LoginResponse(jwtToken,
+                    appUser.getId(), appUser.getEmail(), appUser.getRole().name(),
+                    appUser.getDoctor().getId(), appUser.getDoctor().getName()
+            );
+        }
     }
 }
