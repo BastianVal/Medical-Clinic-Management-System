@@ -1,5 +1,7 @@
 package com.appointments.appointments.appoinment;
 
+import com.appointments.appointments.appUser.AppUser;
+import com.appointments.appointments.appUser.AppUserService;
 import com.appointments.appointments.appoinment.dto.AppointmentRequest;
 import com.appointments.appointments.appoinment.dto.AppointmentResponse;
 import com.appointments.appointments.appointmentStatus.AppointmentStatus;
@@ -28,13 +30,14 @@ public class AppointmentService {
     private final RoomService roomService;
     private final AppointmentStatusService appointmentStatusService;
     private final AppointmentMapper appointmentMapper;
+    private final AppUserService appUserService;
 
     public AppointmentService(AppointmentRepository appointmentRepository,
                               PatientService patientService,
                               DoctorService doctorService,
                               RoomService roomService,
                               AppointmentStatusService appointmentStatusService,
-                              AppointmentMapper appointmentMapper) {
+                              AppointmentMapper appointmentMapper, AppUserService appUserService) {
 
         this.appointmentRepository = appointmentRepository;
         this.patientService = patientService;
@@ -42,10 +45,11 @@ public class AppointmentService {
         this.roomService = roomService;
         this.appointmentStatusService = appointmentStatusService;
         this.appointmentMapper = appointmentMapper;
+        this.appUserService = appUserService;
     }
 
     public AppointmentResponse createAppointment(AppointmentRequest dto){
-        Patient patient = patientService.findByIdEntity(dto.pacientId());
+        Patient patient = patientService.findByIdEntity(dto.patientId());
         Doctor doctor = doctorService.findByIdEntity(dto.doctorId());
         Room room = roomService.findByIdEntity(dto.roomId());
         AppointmentStatus status = appointmentStatusService.findByIdEntity(1);
@@ -74,7 +78,7 @@ public class AppointmentService {
     }
 
     public AppointmentResponse updateAppointment(Integer id, AppointmentRequest dto){
-        Patient patient = patientService.findByIdEntity(dto.pacientId());
+        Patient patient = patientService.findByIdEntity(dto.patientId());
         Doctor doctor = doctorService.findByIdEntity(dto.doctorId());
         Room room = roomService.findByIdEntity(dto.roomId());
         AppointmentStatus status = appointmentStatusService.findById(1);
@@ -146,5 +150,19 @@ public class AppointmentService {
                  .stream()
                  .map(appointmentMapper::toAppointmentDtoResponse)
                  .toList();
+    }
+
+    public List<AppointmentResponse> findByDateAndDoctor(LocalDate date, String doctorEmail){
+        AppUser appUser = appUserService.findByEmailEntity(doctorEmail);
+
+        return appointmentRepository.
+                findByDateTimeBetweenAndDoctorId(
+                        date.atStartOfDay(),
+                        date.atTime(LocalTime.MAX),
+                        appUser.getDoctor().getId()
+                )
+                .stream()
+                .map(appointmentMapper::toAppointmentDtoResponse)
+                .toList();
     }
 }

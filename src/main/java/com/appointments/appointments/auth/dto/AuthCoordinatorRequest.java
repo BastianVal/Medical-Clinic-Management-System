@@ -6,7 +6,6 @@ public record AuthCoordinatorRequest(
         String email,
         String password,
         Role role,
-        String name,
-        Integer specialtyId
+        String name
 ) {
 }

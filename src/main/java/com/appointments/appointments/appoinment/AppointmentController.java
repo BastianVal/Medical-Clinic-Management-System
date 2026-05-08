@@ -2,9 +2,11 @@ package com.appointments.appointments.appoinment;
 
 import com.appointments.appointments.appoinment.dto.AppointmentRequest;
 import com.appointments.appointments.appoinment.dto.AppointmentResponse;
+import org.apache.tomcat.util.http.parser.Authorization;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
@@ -60,11 +62,19 @@ public class AppointmentController {
         return appointmentService.cancelAppointment(id);
     }
 
-    @GetMapping("/dashboard")
+    @GetMapping("/coordinator/dashboard")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasRole('COORDINATOR')")
     public List<AppointmentResponse> findByDateAndDoctors(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
                                                           @RequestParam List<Integer> doctorIds){
         return appointmentService.findByDateAndDoctors(date, doctorIds);
+    }
+
+    @GetMapping("/doctor/dashboard")
+    @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('DOCTOR')")
+    public List<AppointmentResponse> findByDateAndDoctor(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+                                                         Authentication authentication){
+        return appointmentService.findByDateAndDoctor(date, authentication.getName());
     }
 }

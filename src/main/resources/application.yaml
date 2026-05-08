@@ -2,13 +2,13 @@ spring:
   application:
     name: appointments
   datasource:
-    url: jdbc:postgresql://aws-1-us-east-1.pooler.supabase.com:6543/postgres?user=postgres.ognmrkttckndlpadwxmy&password=Alibou_98$P
+    url: jdbc:postgresql://aws-1-us-east-1.pooler.supabase.com:6543/postgres?user=postgres.ognmrkttckndlpadwxmy&password=Alibou_98$P&prepareThreshold=0
     username: postgres.ognmrkttckndlpadwxmy
     password: Alibou_98P
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: 'create-drop'
+      ddl-auto: 'update'
     show-sql: true
     properties:
       hibernate:

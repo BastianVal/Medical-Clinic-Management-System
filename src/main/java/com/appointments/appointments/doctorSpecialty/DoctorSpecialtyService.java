@@ -1,7 +1,10 @@
 package com.appointments.appointments.doctorSpecialty;
 
+import com.appointments.appointments.doctorSpecialty.dto.DoctorSpecialtyResponse;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class DoctorSpecialtyService {
@@ -16,6 +19,17 @@ public class DoctorSpecialtyService {
     // METHODS FOR THE CONTROLLERS (Retrieves DTOs)
     // =========================================================================
 
+    public List<DoctorSpecialtyResponse> findAll(){
+        return doctorSpecialtyRepository.findAll()
+                .stream()
+                .map(specialty ->
+                        new DoctorSpecialtyResponse(
+                        specialty.getId(),
+                        specialty.getSpecialty().name()
+                        )
+                )
+                .toList();
+    }
 
     // =========================================================================
     // METHODS FOR THE SERVICES (Retrieves Entities)
