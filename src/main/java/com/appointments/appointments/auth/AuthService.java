@@ -18,6 +18,7 @@ import com.appointments.appointments.doctor.dto.DoctorResponse;
 import com.appointments.appointments.doctorSpecialty.DoctorSpecialtyService;
 import com.appointments.appointments.jwt.JwtService;
 import jakarta.transaction.Transactional;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -48,6 +49,7 @@ public class AuthService {
     }
 
     @Transactional
+    @CacheEvict(value = "doctorsCache", allEntries = true)
     public DoctorResponse registerDoctor(AuthDoctorRequest authDoctorRequest) {
         AppUser appUser = new AppUser();
         appUser.setEmail(authDoctorRequest.email());

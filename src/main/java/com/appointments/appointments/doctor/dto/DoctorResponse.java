@@ -6,7 +6,9 @@ public record DoctorResponse(
         Integer id,
         String name,
         String email,
-        DoctorSpecialtyEnum specialty,
+        Integer specialtyId,
+//        DoctorSpecialtyEnum specialty,
+        String specialty,
         Integer appUserId
 ) {
 }

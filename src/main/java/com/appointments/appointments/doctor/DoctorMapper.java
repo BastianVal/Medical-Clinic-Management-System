@@ -22,6 +22,7 @@ public class DoctorMapper {
                 doctor.getId(),
                 doctor.getName(),
                 doctor.getAppUser().getEmail(),
+                doctor.getDoctorSpecialty().getId(),
                 doctor.getDoctorSpecialty().getSpecialty(),
                 doctor.getAppUser().getId()
         );

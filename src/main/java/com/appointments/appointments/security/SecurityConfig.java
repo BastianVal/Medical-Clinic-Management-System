@@ -43,7 +43,7 @@ public class SecurityConfig {
                         .requestMatchers("/authenticate/doctor").permitAll()
                         .requestMatchers("/authenticate/coordinator").permitAll()
                         .requestMatchers("/authenticate/login").permitAll()
-                        .requestMatchers("/specialty").permitAll()
+//                        .requestMatchers("/specialty").permitAll()
                         .anyRequest().authenticated()
                 )
                 // 3. APAGAMOS LAS SESIONES (El núcleo del Stateless)

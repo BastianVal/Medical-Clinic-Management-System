@@ -7,6 +7,8 @@ import com.appointments.appointments.doctor.dto.DoctorResponse;
 import com.appointments.appointments.doctorSpecialty.DoctorSpecialtyService;
 import com.appointments.appointments.patient.Patient;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -46,6 +48,7 @@ public class DoctorService {
         throw new EntityNotFoundException("Doctor Not Found");
     }
 
+    @Cacheable("doctorsCache")
     public List<DoctorResponse> findAll(){
         return  doctorRepository.findAll()
                 .stream()
@@ -53,6 +56,7 @@ public class DoctorService {
                 .toList();
     }
 
+    @CacheEvict(value = "doctorsCache", allEntries = true)
     public DoctorResponse updateDoctor(Integer id, DoctorRequest dto){
         Doctor doctor = doctorRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Doctor Not Found"));
@@ -68,6 +72,7 @@ public class DoctorService {
         return doctorMapper.toDoctorDtoResponse(doctor);
     }
 
+    @CacheEvict(value = "doctorsCache", allEntries = true)
     public void deleteById(Integer id){
         if(!doctorRepository.existsById(id)) throw new EntityNotFoundException("Doctor Not Found");
 

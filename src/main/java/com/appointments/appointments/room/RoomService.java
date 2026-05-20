@@ -3,9 +3,10 @@ package com.appointments.appointments.room;
 import com.appointments.appointments.room.dto.RoomRequest;
 import com.appointments.appointments.room.dto.RoomResponse;
 import com.appointments.appointments.roomStatus.RoomStatus;
-import com.appointments.appointments.roomStatus.RoomStatusEnum;
 import com.appointments.appointments.roomStatus.RoomStatusService;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -25,10 +26,9 @@ public class RoomService {
     // METHODS FOR THE CONTROLLERS (Retrieves DTOs)
     // =========================================================================
 
+    @CacheEvict(value = "roomsCache", allEntries = true)
     public RoomResponse createRoom(RoomRequest dto){
-        RoomStatus roomStatus = roomStatusService.findByIdEntity(dto.roomStatusId());
-
-        roomStatus.setStatus(RoomStatusEnum.UNOCCUPIED);
+        RoomStatus roomStatus = roomStatusService.findByIdEntity(1);
 
         Room room = roomMapper.toRoom(dto, roomStatus);
 
@@ -44,6 +44,7 @@ public class RoomService {
         return roomMapper.toRoomDtoResponse(room);
     }
 
+    @Cacheable("roomsCache")
     public List<RoomResponse> findAll(){
         return  roomRepository.findAll()
                 .stream()
@@ -51,6 +52,7 @@ public class RoomService {
                 .toList();
     }
 
+    @CacheEvict(value = "roomsCache", allEntries = true)
     public RoomResponse updateRoom(Integer id, RoomRequest dto){
         Room room = roomRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Room Not Found"));
@@ -62,6 +64,7 @@ public class RoomService {
         return roomMapper.toRoomDtoResponse(room);
     }
 
+    @CacheEvict(value = "roomsCache", allEntries = true)
     public void deleteById(Integer id){
         if(!roomRepository.existsById(id)) throw new EntityNotFoundException("Room Not Found");
 

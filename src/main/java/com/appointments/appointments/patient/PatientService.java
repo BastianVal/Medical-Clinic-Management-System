@@ -5,6 +5,8 @@ import com.appointments.appointments.appUser.AppUserService;
 import com.appointments.appointments.patient.dto.PatientRequest;
 import com.appointments.appointments.patient.dto.PatientResponse;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -24,6 +26,7 @@ public class PatientService {
     // METHODS FOR THE CONTROLLERS (Retrieves DTOs)
     // =========================================================================
 
+    @CacheEvict(value = "patientsCache", allEntries = true)
     public PatientResponse createPacient(PatientRequest dto){
         Patient patient = patientMapper.toPacient(dto);
 
@@ -50,6 +53,7 @@ public class PatientService {
         return patientMapper.toPacientResponse(patient);
     }
 
+    @Cacheable("patientsCache")
     public List<PatientResponse> findAll(String email){
         AppUser appUser = appUserService.findByEmailEntity(email);
 
@@ -70,6 +74,7 @@ public class PatientService {
         }
     }
 
+    @CacheEvict(value = "patientsCache", allEntries = true)
     public PatientResponse updatePacient(Integer id, PatientRequest dto){
         Patient patient = findByIdEntity(id);
 
@@ -81,6 +86,7 @@ public class PatientService {
         return patientMapper.toPacientResponse(patient);
     }
 
+    @CacheEvict(value = "patientsCache", allEntries = true)
     public void deleteById(Integer id){
         if(!patientRepository.existsById(id)) throw new EntityNotFoundException("Patient Not Found");
 

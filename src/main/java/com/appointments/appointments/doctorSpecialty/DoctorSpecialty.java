@@ -13,10 +13,12 @@ import java.util.List;
 @Entity
 public class DoctorSpecialty {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Enumerated(EnumType.STRING)
-    private DoctorSpecialtyEnum specialty;
+//    @Enumerated(EnumType.STRING)
+//    private DoctorSpecialtyEnum specialty;
+    private String specialty;
 
     @OneToMany(mappedBy = "doctorSpecialty")
     private List<Doctor> doctors;
