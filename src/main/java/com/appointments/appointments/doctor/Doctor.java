@@ -7,6 +7,10 @@ import com.appointments.appointments.patient.Patient;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.SQLDelete;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;

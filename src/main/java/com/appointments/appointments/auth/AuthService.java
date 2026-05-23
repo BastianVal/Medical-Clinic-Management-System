@@ -54,6 +54,7 @@ public class AuthService {
         AppUser appUser = new AppUser();
         appUser.setEmail(authDoctorRequest.email());
         appUser.setPassword(passwordEncoder.encode(authDoctorRequest.password()));
+        appUser.setIsActive(true);
 //        appUser.setRole(authDoctorRequest.role());
         appUser.setRole(Role.ROLE_DOCTOR);
 
@@ -74,6 +75,7 @@ public class AuthService {
         AppUser appUser = new AppUser();
         appUser.setEmail(authCoordinatorRequest.email());
         appUser.setPassword(passwordEncoder.encode(authCoordinatorRequest.password()));
+        appUser.setIsActive(true);
 //        appUser.setRole(authCoordinatorRequest.role());
         appUser.setRole(Role.ROLE_COORDINATOR);
 

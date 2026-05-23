@@ -4,6 +4,7 @@ import com.appointments.appointments.appUser.dto.AppUserRequestChangePassword;
 import com.appointments.appointments.appUser.dto.AppUserResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -19,7 +20,7 @@ public class AppUserController {
         this.appUserService = appUserService;
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public AppUserResponse findAppUserById(@PathVariable Integer id){
         return appUserService.findAppUserById(id);
@@ -31,11 +32,25 @@ public class AppUserController {
         return appUserService.findAllAppUser();
     }
 
-    @PatchMapping("me/changePassword")
+    @PatchMapping("/me/changePassword")
     public ResponseEntity<Map<String, String>> changePassword(Authentication authentication,
                                                               @RequestBody AppUserRequestChangePassword appUserRequestChangePassword){
         appUserService.changePassword(authentication.getName(), appUserRequestChangePassword);
 
-        return ResponseEntity.ok(Map.of("message", "Password Updated Succesfully"));
+        return ResponseEntity.ok(Map.of("message", "Password Updated Successfully"));
+    }
+
+    @PostMapping("/deactivate/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('COORDINATOR')")
+    public void deactivateAppUser(@PathVariable Integer id){
+        appUserService.deactivateById(id);
+    }
+
+    @PostMapping("/activate/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('COORDINATOR')")
+    public void activateAppUser(@PathVariable Integer id){
+        appUserService.activateById(id);
     }
 }

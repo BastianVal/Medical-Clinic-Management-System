@@ -56,6 +56,14 @@ public class DoctorService {
                 .toList();
     }
 
+    @Cacheable("doctorsCache")
+    public List<DoctorResponse> findAllActive(){
+        return  doctorRepository.findByAppUser_IsActiveTrue()
+                .stream()
+                .map(doctorMapper::toDoctorDtoResponse)
+                .toList();
+    }
+
     @CacheEvict(value = "doctorsCache", allEntries = true)
     public DoctorResponse updateDoctor(Integer id, DoctorRequest dto){
         Doctor doctor = doctorRepository.findById(id)
@@ -70,13 +78,6 @@ public class DoctorService {
         doctor = doctorRepository.save(doctor);
 
         return doctorMapper.toDoctorDtoResponse(doctor);
-    }
-
-    @CacheEvict(value = "doctorsCache", allEntries = true)
-    public void deleteById(Integer id){
-        if(!doctorRepository.existsById(id)) throw new EntityNotFoundException("Doctor Not Found");
-
-        doctorRepository.deleteById(id);
     }
 
     // =========================================================================

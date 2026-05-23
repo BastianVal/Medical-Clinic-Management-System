@@ -38,12 +38,19 @@ public class DoctorController {
         return doctorService.findAll();
     }
 
-    @DeleteMapping("{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @GetMapping("/active")
+    @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasRole('COORDINATOR')")
-    public void deleteById(@PathVariable Integer id){
-        doctorService.deleteById(id);
+    public List<DoctorResponse> findAllAppUserActive(){
+        return doctorService.findAllActive();
     }
+
+//    @DeleteMapping("{id}")
+//    @ResponseStatus(HttpStatus.NO_CONTENT)
+//    @PreAuthorize("hasRole('COORDINATOR')")
+//    public void deleteById(@PathVariable Integer id){
+//        doctorService.deactivateById(id);
+//    }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)

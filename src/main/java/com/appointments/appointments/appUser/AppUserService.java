@@ -2,7 +2,9 @@ package com.appointments.appointments.appUser;
 
 import com.appointments.appointments.appUser.dto.AppUserRequestChangePassword;
 import com.appointments.appointments.appUser.dto.AppUserResponse;
+import com.appointments.appointments.doctor.Doctor;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -62,6 +64,28 @@ public class AppUserService implements UserDetailsService {
                 .orElseThrow(() -> new EntityNotFoundException("Email Not Found"));
     }
 
+    @CacheEvict(value = "doctorsCache", allEntries = true)
+    public void deactivateById(Integer id){
+        if(!appUserRepository.existsById(id)) throw new EntityNotFoundException("Account Not Found");
+
+        AppUser appUser = findAppUserByIdEntity(id);
+
+        appUser.setIsActive(false);
+
+        appUserRepository.save(appUser);
+    }
+
+    @CacheEvict(value = "doctorsCache", allEntries = true)
+    public void activateById(Integer id){
+        if(!appUserRepository.existsById(id)) throw new EntityNotFoundException("Account Not Found");
+
+        AppUser appUser = findAppUserByIdEntity(id);
+
+        appUser.setIsActive(true);
+
+        appUserRepository.save(appUser);
+    }
+
     // =========================================================================
     // METHODS FOR THE SERVICES (Retrieves Entities)
     // =========================================================================
@@ -77,17 +101,18 @@ public class AppUserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        AppUser appUser = appUserRepository.findByEmail(username)
+        return appUserRepository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Email Not Found"));
-
-        List<GrantedAuthority> authorities = new ArrayList<>();
-
-        authorities.add(new SimpleGrantedAuthority(appUser.getRole().name()));
-
-        return User.builder()
-                .username(appUser.getEmail())
-                .password(appUser.getPassword())
-                .authorities(authorities)
-                .build();
+//        AppUser appUser = appUserRepository.findByEmail(username)
+//                .orElseThrow(() -> new UsernameNotFoundException("Email Not Found"));
+//        List<GrantedAuthority> authorities = new ArrayList<>();
+//
+//        authorities.add(new SimpleGrantedAuthority(appUser.getRole().name()));
+//
+//        return User.builder()
+//                .username(appUser.getEmail())
+//                .password(appUser.getPassword())
+//                .authorities(authorities)
+//                .build();
     }
 }
