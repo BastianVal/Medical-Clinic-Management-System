@@ -9,6 +9,7 @@ public record DoctorResponse(
         Integer specialtyId,
 //        DoctorSpecialtyEnum specialty,
         String specialty,
-        Integer appUserId
+        Integer appUserId,
+        Boolean isActive
 ) {
 }
