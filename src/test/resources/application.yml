@@ -1,0 +1,16 @@
+# Configuracion para que los tests corran en memoria
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driverClassName: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+
+COORDINATOR_EMAIL: "test_coordinator@clinica.com"
+COORDINATOR_PASSWORD: "dummy_password_123"
+JWT_SECRET: "494I635266556A586E3272377537782A713A7428472C7B6250645367576H597075348"

@@ -7,7 +7,6 @@ import com.appointments.appointments.auth.AuthService;
 import com.appointments.appointments.auth.dto.AuthCoordinatorRequest;
 import com.appointments.appointments.auth.role.Role;
 import com.appointments.appointments.coordinator.CoordinatorRepository;
-import com.appointments.appointments.doctor.DoctorRepository;
 import com.appointments.appointments.doctorSpecialty.DoctorSpecialtyRepository;
 import com.appointments.appointments.doctorSpecialty.DoctorSpecialtyService;
 import com.appointments.appointments.doctorSpecialty.dto.DoctorSpecialtyRequest;
@@ -43,7 +42,6 @@ public class AppointmentsApplication {
 	CommandLineRunner initDatabase(AppointmentStatusRepository appointmentStatusRepository,
 								   DoctorSpecialtyRepository doctorSpecialtyRepository,
 								   RoomStatusRepository roomStatusRepository,
-								   DoctorRepository doctorRepository,
 								   CoordinatorRepository coordinatorRepository,
 								   AuthService authService,
 								   DoctorSpecialtyService doctorSpecialtyService
