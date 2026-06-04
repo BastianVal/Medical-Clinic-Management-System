@@ -1,4 +1,4 @@
-# Clinic Appointments API
+# Medical Clinic Appointments API
 
 A robust, enterprise-grade RESTful API built to manage clinical appointments, medical staff, and patient records. This backend system is designed with a strong focus on security, scalability, and seamless cloud deployment.
 
