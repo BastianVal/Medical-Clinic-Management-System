@@ -69,7 +69,7 @@ public class AppointmentsApplication {
 						"my name is coordinator1"
 				));
 			}
-			System.out.println("Started");
+			System.out.println("Started 2");
 		};
 	}
 
